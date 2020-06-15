@@ -66,7 +66,6 @@ abstract class AbstractFigure
             throw new IllegalMoveException('Your king is not safe');
         }
 
-        $this->setCoordinates($destination);
         $response = [
             'isOver' => false,
             'taken' => $takenAbbreviation,
@@ -79,7 +78,6 @@ abstract class AbstractFigure
 
         $this->board->removeFigure($taken);
         $this->endMove($destination, $transformationModificator);
-
         return $response;
     }
 
@@ -118,6 +116,7 @@ abstract class AbstractFigure
     protected function endMove($destination, $transformationModificator = '')
     {
         $this->moved = true;
+        $this->setCoordinates($destination);
     }
 
     public function isMoved()

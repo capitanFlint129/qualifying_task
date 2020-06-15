@@ -48,7 +48,7 @@ class Pawn extends AbstractFigure
                 $takenFigureCoordinates = $destination;
                 $takenFigureCoordinates[1] = $this->coordinates[1];
                 $taken = $this->board->getFigure($takenFigureCoordinates);
-                if ($taken instanceof Pawn and $taken->isPassant()) {
+                if (!is_null($taken) and $taken instanceof Pawn and $taken->isPassant()) {
                     return true;
                 }
             }
@@ -86,7 +86,7 @@ class Pawn extends AbstractFigure
     {
         $this->enPassantMove = false;
 
-        if (!$this->moved and abs($destination[1] - $this->coordinates[1]) and strcmp($destination[0], $this->coordinates[0])) {
+        if (!$this->moved and abs($destination[1] - $this->coordinates[1]) > 1 and $destination[0] == $this->coordinates[0]) {
             $this->enPassantMove = true;
         }
 
