@@ -1,85 +1,95 @@
-<p align="center"><img src="https://res.cloudinary.com/dtfbvvkyp/image/upload/v1566331377/laravel-logolockup-cmyk-red.svg" width="400"></p>
+## API для игры в шахматы
+Для создания API использовался фреймворк Laravel.
+### Как играть
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/d/total.svg" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/v/stable.svg" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/license.svg" alt="License"></a>
-</p>
+####Статус игры
 
-## About Laravel
+GET /status
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Возвращает информацию о текущей партии. Содержит следующую информацию:
+1) Текущий игрок.
+2) Закончена ли игра.
+3) Положение фигур на доске.
+4) Победитель (если игра закончена).
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Пример ответа:
+```json
+{
+    "currentPlayer": "black",
+    "isOver": true,
+    "board": [
+                [ "0", "A", "B", "C", "D", "E", "F", "G", "H"],
+                ["1", "WR", "WK", "WB", "WQ", "__", "WB", "WK", "WR"],
+                ["2", "WP", "WP", "WP", "WP", "__", "WP", "WP", "WP"],
+                ["3", "__", "__", "__", "__", "__", "__", "__", "__"],
+                ["4", "__", "__", "__", "__", "__", "__", "__", "__"],
+                ["5", "__", "__", "__", "__", "WKing", "__", "__", "__"],
+                ["6", "BP","__", "__", "BQ", "__", "BK", "__", "__"],
+                ["7", "__", "BP", "BP", "__", "__", "BP", "BP", "BP"],
+                ["8", "BR", "BK", "BB", "__", "BKing", "BB", "__", "BR"]
+              ],
+    "winner": "black"
+}
+```
 
-## Learning Laravel
+####Создание новой игры
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+POST /new_game
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Создается новая игра, результаты старой партии теряются.
 
-## Laravel Sponsors
+####Ход
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+POST /make_move
 
-### Premium Partners
+Пример запроса:
+```json
+{
+    "figureCoordinates": "A2",
+    "destination": "A3",
+    "transformationModificator": "Q"
+}
+```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
+В теле запроса передается JSON. Есть два обязательных параметра "figureCoordinates" и "destination". Первый параметр - координаты фигуры, которой ходят, второй параметр - координаты квадрата, на котором эта фигура должна оказаться. Координаты задаются строкой, состоящей из одной латинской буквы от "A" до "H" и цифры от 1 до 8.
 
-### Community Sponsors
+Также есть не обязательный параметр - "transformationModificator", он обозначает фигуру, в которую превратится пешка при переходе на последнюю горизонталь, если его не указать, то пешка превратится в королеву. Возможные значения параметра: "Q" - королева, "R" - ладья, "K" - конь, "B" - слон.
 
-<a href="https://op.gg"><img src="http://opgg-static.akamaized.net/icon/t.rectangle.png" width="150"></a>
+#####Особые ходы
+Любые ходы в том числе взятие на проходе и рокировка задаются координатами фигуры и координатами квадрата, куда она должна попасть. Рокировка и взятие на проходе будут распознаны автоматически. 
 
-- [UserInsights](https://userinsights.com)
-- [Fragrantica](https://www.fragrantica.com)
-- [SOFTonSOFA](https://softonsofa.com/)
-- [User10](https://user10.com)
-- [Soumettre.fr](https://soumettre.fr/)
-- [CodeBrisk](https://codebrisk.com)
-- [1Forge](https://1forge.com)
-- [TECPRESSO](https://tecpresso.co.jp/)
-- [Runtime Converter](http://runtimeconverter.com/)
-- [WebL'Agence](https://weblagence.com/)
-- [Invoice Ninja](https://www.invoiceninja.com)
-- [iMi digital](https://www.imi-digital.de/)
-- [Earthlink](https://www.earthlink.ro/)
-- [Steadfast Collective](https://steadfastcollective.com/)
-- [We Are The Robots Inc.](https://watr.mx/)
-- [Understand.io](https://www.understand.io/)
-- [Abdel Elrafa](https://abdelelrafa.com)
-- [Hyper Host](https://hyper.host)
-- [Appoly](https://www.appoly.co.uk)
-- [云软科技](http://www.yunruan.ltd/)
+#####Ответ
 
-## Contributing
+После хода возвращается статус игры:
+1) Окончена ли игра.
+2) Какая фигура была взята.
+3) Расположение фигур на доске.
+4) Текущий игрок.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```json
+{
+    "isOver": false,
+    "taken": "",
+    "board": [
+        [ "0", "A", "B", "C", "D", "E", "F", "G", "H"],
+        [ "1", "WR", "WK", "WB", "WQ", "WKing", "WB", "WK", "WR"],
+        [ "2", "__", "WP", "WP", "WP", "WP", "WP", "WP", "WP"],
+        [ "3", "WP", "__", "__", "__", "__", "__", "__", "__"],
+        [ "4", "__", "__", "__", "__", "__", "__", "__", "__"],
+        [ "5", "__", "__", "__", "__", "__", "__", "__", "__"],
+        [ "6", "__", "__", "__", "__", "__", "__", "__", "__"],
+        [ "7", "BP", "BP", "BP", "BP", "BP", "BP", "BP", "BP"],
+        [ "8", "BR", "BK", "BB", "BQ", "BKing", "BB", "BK", "BR"]
+    ],
+    "currentPlayer": "black"
+}
+```
 
-## Code of Conduct
+Если поставлен мат, то будет возвращаться следующее сообщение:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```json
+{
+    "message": "Game is over, black wins!"
+}
+```
