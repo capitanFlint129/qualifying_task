@@ -91,6 +91,7 @@ class Pawn extends AbstractFigure
         }
 
         if ($this->coordinates[1] == 1 or $this->coordinates[1] == 8) {
+            $newFigure = new Queen($this->color, $this->board, mb_chr($this->coordinates[0]), $this->coordinates[1]);
             switch ($transformationModificator) {
                 case 'Q':
                     $newFigure = new Queen($this->color, $this->board, mb_chr($this->coordinates[0]), $this->coordinates[1]);
