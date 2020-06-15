@@ -93,3 +93,16 @@ POST /make_move
     "message": "Game is over, black wins!"
 }
 ```
+
+### Запуск
+Для запуска нужно выполнить команду
+```
+php artisan serve
+```
+
+### Запуск тестов
+Для запуска тестов нужно выполнить команду
+```
+vendor/bin/phpunit
+```
+
